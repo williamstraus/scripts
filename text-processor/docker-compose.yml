@@ -1,0 +1,34 @@
+services:
+  hsqldb:
+    image: mitchtalmadge/hsqldb
+    ports:
+      - "9001:9001"
+    environment:
+      - HSQLDB_DATABASE_ALIAS=db1
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+        - 5672:5672
+        - 15672:15672
+
+  core:
+    image: williamstraus/wordprocessor-core
+    ports:
+      - "8080:8080"
+    depends_on:
+      - hsqldb
+
+  worker:
+    image: williamstraus/wordprocessor-worker
+    ports:
+      - "8081:8081"
+    depends_on:
+      - hsqldb
+      - rabbitmq
+      - core
+
+  front:
+    image: williamstraus/wordprocessor-front
+    ports:
+      - "3000:3000"
